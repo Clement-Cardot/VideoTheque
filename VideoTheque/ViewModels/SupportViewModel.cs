@@ -4,7 +4,7 @@ using VideoTheque.DTOs;
 
 namespace VideoTheque.ViewModels
 {
-    public class AgeRatingViewModel
+    public class SupportViewModel
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
@@ -12,10 +12,6 @@ namespace VideoTheque.ViewModels
         [JsonPropertyName("nom")]
         [Required]
         public string Name { get; set; }
-
-        [JsonPropertyName("abreviation")]
-        [Required]
-        public string Abreviation { get; set; }
 
     }
 }
