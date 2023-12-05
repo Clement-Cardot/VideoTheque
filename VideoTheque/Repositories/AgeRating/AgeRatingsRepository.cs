@@ -18,6 +18,13 @@ namespace VideoTheque.Repositories.AgeRating
 
         public ValueTask<AgeRatingDto?> GetAgeRating(int id) => _db.AgeRatings.FindAsync(id);
 
+        public ValueTask<AgeRatingDto?> GetAgeRatingByName(string name)
+        {
+            return new ValueTask<AgeRatingDto?>(
+                _db.AgeRatings.Where(a => a.Name == name).Single()
+                );
+        }
+
         public Task InsertAgeRating(AgeRatingDto ageRating)
         {
             _db.AgeRatings.AddAsync(ageRating);

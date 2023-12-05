@@ -9,6 +9,8 @@ namespace VideoTheque.Repositories.Genres
 
         ValueTask<GenreDto?> GetGenre(int id);
 
+        ValueTask<GenreDto?> GetGenreByName(string name);
+
         Task InsertGenre(GenreDto genre);
 
         Task UpdateGenre(int id, GenreDto genre);

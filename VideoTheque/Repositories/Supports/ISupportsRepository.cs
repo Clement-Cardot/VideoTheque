@@ -9,6 +9,8 @@ namespace VideoTheque.Repositories.Supports
 
         ValueTask<SupportDto?> GetSupport(int id);
 
+        ValueTask<SupportDto?> GetSupportByName(string name);
+
         Task InsertSupport(SupportDto support);
 
         Task UpdateSupport(int id, SupportDto support);

@@ -9,6 +9,8 @@ namespace VideoTheque.Repositories.AgeRating
 
         ValueTask<AgeRatingDto?> GetAgeRating(int id);
 
+        ValueTask<AgeRatingDto?> GetAgeRatingByName(string name);
+
         Task InsertAgeRating(AgeRatingDto AgeRating);
 
         Task UpdateAgeRating(int id, AgeRatingDto AgeRating);

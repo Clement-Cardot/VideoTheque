@@ -1,6 +1,8 @@
-﻿using VideoTheque.Core;
+﻿using Mapster;
+using VideoTheque.Core;
 using VideoTheque.DTOs;
 using VideoTheque.Repositories.Personnes;
+using VideoTheque.ViewModels;
 
 namespace VideoTheque.Businesses.Personnes
 {
@@ -11,6 +13,8 @@ namespace VideoTheque.Businesses.Personnes
         public PersonnesBusiness(IPersonnesRepository personneDao)
         {
             _personneDao = personneDao;
+            TypeAdapterConfig<PersonneDto, PersonneViewModel>.NewConfig()
+                .Map(dest => dest.FullName, src => src.FirstName + " " + src.LastName);
         }
 
         public Task<List<PersonneDto>> GetPersonnes() => _personneDao.GetPersonnes();

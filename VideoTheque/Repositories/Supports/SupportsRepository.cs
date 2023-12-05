@@ -30,7 +30,7 @@ namespace VideoTheque.Repositories.Supports
 
         public Task<List<SupportDto>> GetSupports()
         {
-            return Task<List<SupportDto>>.Run(() =>
+            return Task.Run(() =>
             {
                 List<SupportDto> supportDtos = new List<SupportDto>();
                 foreach (int id in Enum.GetValues(typeof(_db)))
@@ -55,6 +55,25 @@ namespace VideoTheque.Repositories.Supports
                 new SupportDto {
                     Id = id,
                     Name = Enum.GetName(typeof(_db), id)
+                }
+            );
+        }
+
+        public ValueTask<SupportDto?> GetSupportByName(string name)
+        {
+            string[] supports = Enum.GetNames(typeof(_db));
+            foreach(string s in supports)
+            {
+                if (s == name)
+                {
+                    // TODO Finir cette impl
+                }
+            }
+            return new ValueTask<SupportDto?>(
+                new SupportDto
+                {
+                    Id = ,
+                    Name = (_db) name
                 }
             );
         }

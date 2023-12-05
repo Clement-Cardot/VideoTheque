@@ -17,9 +17,6 @@
         {
             _logger = logger;
             _personnesBusiness = personnesBusiness;
-
-            TypeAdapterConfig<PersonneDto, PersonneViewModel>.NewConfig()
-                .Map(dest => dest.FullName, src => src.FirstName + " " + src.LastName);
         }
 
         [HttpGet]
