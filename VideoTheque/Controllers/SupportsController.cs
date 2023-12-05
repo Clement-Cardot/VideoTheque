@@ -17,7 +17,7 @@
         public SupportsController(ILogger<SupportsController> logger, ISupportsBusiness supportsBusiness)
         {
             _logger = logger;
-            _supportsBusiness = _supportsBusiness;
+            _supportsBusiness = supportsBusiness;
         }
 
         [HttpGet]
