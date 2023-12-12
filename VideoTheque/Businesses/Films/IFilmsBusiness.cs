@@ -1,16 +1,17 @@
 ﻿using VideoTheque.DTOs;
+using VideoTheque.ViewModels;
 
 namespace VideoTheque.Businesses.Films
 {
     public interface IFilmsBusiness
     {
-        Task<List<FilmDto>> GetFilms();
+        Task<List<FilmViewModel>> GetFilms();
 
-        FilmDto GetFilm(int id);
+        FilmViewModel GetFilm(int id);
 
-        FilmDto InsertFilm(FilmDto film);
+        FilmViewModel InsertFilm(FilmViewModel film);
 
-        void UpdateFilm(int id, FilmDto film);
+        void UpdateFilm(int id, FilmViewModel film);
 
         void DeleteFilm(int id);
     }

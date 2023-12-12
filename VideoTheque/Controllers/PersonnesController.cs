@@ -8,7 +8,7 @@
 
     [ApiController]
     [Route("personnes")]
-    public class PersonnesController
+    public class PersonnesController : ControllerBase
     {
         private readonly IPersonnesBusiness _personnesBusiness;
         protected readonly ILogger<PersonnesController> _logger;

@@ -1,30 +1,33 @@
-﻿using Mapster;
-using System.IO;
-using VideoTheque.Core;
-using VideoTheque.DTOs;
-using VideoTheque.Repositories.AgeRating;
+﻿using VideoTheque.Repositories.AgeRating;
 using VideoTheque.Repositories.Films;
 using VideoTheque.Repositories.Genres;
 using VideoTheque.Repositories.Personnes;
 using VideoTheque.Repositories.Supports;
+using VideoTheque.Repositories.Hosts;
 using VideoTheque.ViewModels;
+using VideoTheque.DTOs;
+using Mapster;
 
-namespace VideoTheque.Businesses.Films
+namespace VideoTheque.Businesses.Emprunts
 {
-    public class FilmsBusiness : IFilmsBusiness
+    public class EmpruntsClientBusiness : IEmpruntsClientBusiness
     {
+        private static HttpClient httpClient = new();
+
         private readonly IFilmsRepository _filmDao;
         private readonly IPersonnesRepository _personneDao;
         private readonly IGenresRepository _genreDao;
         private readonly IAgeRatingsRepository _ageRatingDao;
         private readonly ISupportsRepository _supportDao;
+        private readonly IHostsRepository _hostDao;
 
-        public FilmsBusiness(
+        public EmpruntsClientBusiness(
             IFilmsRepository filmDao,
             IPersonnesRepository personnesRepository,
             IGenresRepository genresRepository,
             IAgeRatingsRepository ageRatingsRepository,
-            ISupportsRepository supportsRepository
+            ISupportsRepository supportsRepository,
+            IHostsRepository hostDao
             )
         {
             _filmDao = filmDao;
@@ -32,62 +35,24 @@ namespace VideoTheque.Businesses.Films
             _genreDao = genresRepository;
             _ageRatingDao = ageRatingsRepository;
             _supportDao = supportsRepository;
+            _hostDao = hostDao;
         }
 
-        public Task<List<FilmViewModel>> GetFilms()
+        public Task<HttpResponseMessage> GetFilmsEmpruntablesFromHost(int idHost)
         {
-            return Task.Run(() =>
-            {
-                List<FilmViewModel> films = new List<FilmViewModel>();
-                List<BluRayDto> blurays = _filmDao.GetFilms().Result;
-                foreach(BluRayDto bluray in blurays)
-                {
-                    films.Add(this.convertToModelView(this.ConvertToFilm(bluray)));
-                }
-                return films;
-            }
-            );
+            HostDto host = _hostDao.GetHost(idHost).Result;
+
+            return httpClient.GetAsync(host.Url + "/emprunt/server");
         }
 
-        public FilmViewModel GetFilm(int id)
+        public void EmpruntFilm(int idHost, int idFilm)
         {
-            var bluray = _filmDao.GetFilm(id).Result;
+            HostDto host = _hostDao.GetHost(idHost).Result;
 
-            if (bluray == null)
-            {
-                throw new NotFoundException($"Film '{id}' non trouvé");
-            }
+            FilmViewModel film = httpClient.GetAsync(host.Url + "/emprunt/server").Result.Adapt<FilmViewModel>();
 
-            return this.convertToModelView(this.ConvertToFilm(bluray));
-        }
-
-        public FilmViewModel InsertFilm(FilmViewModel filmMV)
-        {
-            FilmDto film = this.convertToDto(filmMV);
-            if (_filmDao.InsertFilm(this.ConvertToBluray(film)).IsFaulted)
-            {
-                throw new InternalErrorException($"Erreur lors de l'insertion du film {film.Title}");
-            }
-
-            return this.convertToModelView(film);
-        }
-
-        public void UpdateFilm(int id, FilmViewModel filmMV)
-        {
-            FilmDto film = this.convertToDto(filmMV);
-
-            if (_filmDao.UpdateFilm(id, this.ConvertToBluray(film)).IsFaulted)
-            {
-                throw new InternalErrorException($"Erreur lors de la modification du film {film.Title}");
-            }
-        }
-
-        public void DeleteFilm(int id)
-        {
-            if (_filmDao.DeleteFilm(id).IsFaulted)
-            {
-                throw new InternalErrorException($"Erreur lors de la suppression du film d'identifiant {id}");
-            }
+            FilmDto filmDto = convertToDto(film);
+            filmDto.Owner = film.
         }
 
         private FilmDto ConvertToFilm(BluRayDto bluray)
@@ -102,7 +67,8 @@ namespace VideoTheque.Businesses.Films
                 Director = _personneDao.GetPersonne(bluray.IdDirector).Result,
                 FirstActor = _personneDao.GetPersonne(bluray.IdFirstActor).Result,
                 Scenarist = _personneDao.GetPersonne(bluray.IdScenarist).Result,
-                Support = _supportDao.GetSupport(1).Result
+                Support = _supportDao.GetSupport(1).Result,
+                Owner = _hostDao.GetHost(bluray.IdOwner).Result
             };
         }
 
@@ -129,7 +95,7 @@ namespace VideoTheque.Businesses.Films
             {
                 Id = filmDto.Id,
                 Titre = filmDto.Title,
-                Duree = (int) filmDto.Duration,
+                Duree = (int)filmDto.Duration,
                 AgeRating = filmDto.AgeRating.Name,
                 Genre = filmDto.Genre.Name,
                 Support = filmDto.Support.Name,

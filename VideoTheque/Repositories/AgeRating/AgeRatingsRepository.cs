@@ -21,7 +21,14 @@ namespace VideoTheque.Repositories.AgeRating
         public ValueTask<AgeRatingDto?> GetAgeRatingByName(string name)
         {
             return new ValueTask<AgeRatingDto?>(
-                _db.AgeRatings.Where(a => a.Name == name).Single()
+                _db.AgeRatings.Where(a => string.Equals(a.Name, name)).Single()
+                );
+        }
+
+        public ValueTask<AgeRatingDto?> GetAgeRatingByAbreviation(string abreviation)
+        {
+            return new ValueTask<AgeRatingDto?>(
+                _db.AgeRatings.Where(a => string.Equals(a.Abreviation, abreviation)).Single()
                 );
         }
 

@@ -62,18 +62,24 @@ namespace VideoTheque.Repositories.Supports
         public ValueTask<SupportDto?> GetSupportByName(string name)
         {
             string[] supports = Enum.GetNames(typeof(_db));
-            foreach(string s in supports)
+            int supportsIndex = -1;
+            for (int i = 0; i < supports.Length; i++)
             {
-                if (s == name)
+                if (name == supports[i])
                 {
-                    // TODO Finir cette impl
+                    supportsIndex = i;
+                    break;
                 }
+            }
+            if (supportsIndex == -1)
+            {
+                return new ValueTask<SupportDto?>();
             }
             return new ValueTask<SupportDto?>(
                 new SupportDto
                 {
-                    Id = ,
-                    Name = (_db) name
+                    Id = supportsIndex,
+                    Name = name
                 }
             );
         }

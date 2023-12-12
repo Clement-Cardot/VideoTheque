@@ -11,7 +11,7 @@
 
     [ApiController]
     [Route("films")]
-    public class FilmsController
+    public class FilmsController : ControllerBase
     {
         private readonly IFilmsBusiness _filmsBusiness;
         protected readonly ILogger<FilmsController> _logger;
@@ -23,22 +23,22 @@
         }
 
         [HttpGet]
-        public async Task<List<FilmViewModel>> GetFilms() => (await _filmsBusiness.GetFilms()).Adapt<List<FilmViewModel>>();
+        public async Task<List<FilmViewModel>> GetFilms() => await _filmsBusiness.GetFilms();
 
         [HttpGet("{id}")]
-        public async Task<FilmViewModel> GetFilm([FromRoute] int id) => _filmsBusiness.GetFilm(id).Adapt<FilmViewModel>();
+        public async Task<FilmViewModel> GetFilm([FromRoute] int id) => _filmsBusiness.GetFilm(id);
 
         [HttpPost]
         public async Task<IResult> InsertFilm([FromBody] FilmViewModel filmVM)
         {
-            var created = _filmsBusiness.InsertFilm(filmVM.Adapt<FilmDto>());
+            var created = _filmsBusiness.InsertFilm(filmVM);
             return Results.Created($"/films/{created.Id}", created);
         }
 
         [HttpPut("{id}")]
         public async Task<IResult> UpdateFilm([FromRoute] int id, [FromBody] FilmViewModel filmVM)
         {
-            _filmsBusiness.UpdateFilm(id, filmVM.Adapt<FilmDto>());
+            _filmsBusiness.UpdateFilm(id, filmVM);
             return Results.NoContent();
         }
 

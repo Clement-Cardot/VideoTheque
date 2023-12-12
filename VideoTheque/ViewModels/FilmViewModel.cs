@@ -9,13 +9,9 @@ namespace VideoTheque.ViewModels
         [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [JsonPropertyName("realisateur")]
+        [JsonPropertyName("titre")]
         [Required]
-        public string Director { get; set; }
-
-        [JsonPropertyName("scenariste")]
-        [Required]
-        public string Scenarist { get; set; }
+        public string Titre { get; set; }
 
         [JsonPropertyName("duree")]
         [Required]
@@ -23,7 +19,7 @@ namespace VideoTheque.ViewModels
 
         [JsonPropertyName("support")]
         [Required]
-        public string Support = "BLURAY";
+        public string Support { get; set; }
 
         [JsonPropertyName("age-rating")]
         [Required]
@@ -33,14 +29,17 @@ namespace VideoTheque.ViewModels
         [Required]
         public string Genre { get; set; }
 
-        [JsonPropertyName("titre")]
+        [JsonPropertyName("realisateur")]
         [Required]
-        public string Titre { get; set; }
+        public string Director { get; set; }
+
+        [JsonPropertyName("scenariste")]
+        [Required]
+        public string Scenarist { get; set; }
 
         [JsonPropertyName("acteur-principal")]
         [Required]
         public string FirstActor { get; set; }
-
 
     }
 }

@@ -1,6 +1,4 @@
-﻿using Mapster;
-using System.IO;
-using VideoTheque.Core;
+﻿using VideoTheque.Core;
 using VideoTheque.DTOs;
 using VideoTheque.Repositories.AgeRating;
 using VideoTheque.Repositories.Films;
@@ -9,17 +7,18 @@ using VideoTheque.Repositories.Personnes;
 using VideoTheque.Repositories.Supports;
 using VideoTheque.ViewModels;
 
-namespace VideoTheque.Businesses.Films
+namespace VideoTheque.Businesses.Emprunts
 {
-    public class FilmsBusiness : IFilmsBusiness
+    public class EmpruntsServerBusiness : IEmpruntsServerBusiness
     {
+
         private readonly IFilmsRepository _filmDao;
         private readonly IPersonnesRepository _personneDao;
         private readonly IGenresRepository _genreDao;
         private readonly IAgeRatingsRepository _ageRatingDao;
         private readonly ISupportsRepository _supportDao;
 
-        public FilmsBusiness(
+        public EmpruntsServerBusiness(
             IFilmsRepository filmDao,
             IPersonnesRepository personnesRepository,
             IGenresRepository genresRepository,
@@ -34,13 +33,13 @@ namespace VideoTheque.Businesses.Films
             _supportDao = supportsRepository;
         }
 
-        public Task<List<FilmViewModel>> GetFilms()
+        public Task<List<FilmViewModel>> GetFilmsEmpruntables()
         {
             return Task.Run(() =>
             {
                 List<FilmViewModel> films = new List<FilmViewModel>();
-                List<BluRayDto> blurays = _filmDao.GetFilms().Result;
-                foreach(BluRayDto bluray in blurays)
+                List<BluRayDto> blurays = _filmDao.GetFilmsEmpruntables().Result;
+                foreach (BluRayDto bluray in blurays)
                 {
                     films.Add(this.convertToModelView(this.ConvertToFilm(bluray)));
                 }
@@ -49,7 +48,7 @@ namespace VideoTheque.Businesses.Films
             );
         }
 
-        public FilmViewModel GetFilm(int id)
+        public FilmViewModel GetEmprunt(int id)
         {
             var bluray = _filmDao.GetFilm(id).Result;
 
@@ -58,36 +57,40 @@ namespace VideoTheque.Businesses.Films
                 throw new NotFoundException($"Film '{id}' non trouvé");
             }
 
-            return this.convertToModelView(this.ConvertToFilm(bluray));
-        }
-
-        public FilmViewModel InsertFilm(FilmViewModel filmMV)
-        {
-            FilmDto film = this.convertToDto(filmMV);
-            if (_filmDao.InsertFilm(this.ConvertToBluray(film)).IsFaulted)
+            if (bluray.IsAvailable == false)
             {
-                throw new InternalErrorException($"Erreur lors de l'insertion du film {film.Title}");
+                throw new NotFoundException($"Film '{id}' n'est pas disponible");
             }
 
-            return this.convertToModelView(film);
+            if (bluray.IdOwner != null)
+            {
+                throw new NotFoundException($"Film '{id}' ne m'appartient pas");
+            }
+
+            FilmViewModel result = this.convertToModelView(this.ConvertToFilm(bluray));
+
+            bluray.IsAvailable = false;
+            _filmDao.UpdateFilm(id, bluray);
+
+            return result;
         }
 
-        public void UpdateFilm(int id, FilmViewModel filmMV)
+        public void DeleteEmprunt(string title)
         {
-            FilmDto film = this.convertToDto(filmMV);
+            var bluray = _filmDao.GetFilmByName(title);
 
-            if (_filmDao.UpdateFilm(id, this.ConvertToBluray(film)).IsFaulted)
+            if (bluray == null)
             {
-                throw new InternalErrorException($"Erreur lors de la modification du film {film.Title}");
+                throw new NotFoundException($"Film '{title}' non trouvé");
             }
-        }
 
-        public void DeleteFilm(int id)
-        {
-            if (_filmDao.DeleteFilm(id).IsFaulted)
+            if (bluray.IsAvailable == true)
             {
-                throw new InternalErrorException($"Erreur lors de la suppression du film d'identifiant {id}");
+                throw new NotFoundException($"Film '{title}' est déjà disponible");
             }
+
+            bluray.IsAvailable = true;
+            _filmDao.UpdateFilm(bluray.Id, bluray);
         }
 
         private FilmDto ConvertToFilm(BluRayDto bluray)
@@ -129,7 +132,7 @@ namespace VideoTheque.Businesses.Films
             {
                 Id = filmDto.Id,
                 Titre = filmDto.Title,
-                Duree = (int) filmDto.Duration,
+                Duree = (int)filmDto.Duration,
                 AgeRating = filmDto.AgeRating.Name,
                 Genre = filmDto.Genre.Name,
                 Support = filmDto.Support.Name,
