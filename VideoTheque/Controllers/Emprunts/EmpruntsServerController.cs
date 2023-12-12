@@ -19,10 +19,13 @@ namespace VideoTheque.Controllers.Emprunts
             _empruntsServerBusiness = empruntsServerBusiness;
         }
 
+        [HttpGet]
         public async Task<List<FilmViewModel>> GetFilmsEmpruntables() => await _empruntsServerBusiness.GetFilmsEmpruntables();
 
+        [HttpGet("{id}")]
         public FilmViewModel GetEmprunt([FromRoute] int id) => _empruntsServerBusiness.GetEmprunt(id);
 
+        [HttpDelete("{id}")]
         public async Task<IResult> DeleteEmprunt([FromRoute] string title)
         {
             _empruntsServerBusiness.DeleteEmprunt(title);

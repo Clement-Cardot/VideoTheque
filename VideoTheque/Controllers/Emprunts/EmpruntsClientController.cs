@@ -8,7 +8,7 @@ namespace VideoTheque.Controllers.Emprunts
 {
     [ApiController]
     [Route("emprunts/client")]
-    public class EmpruntsClientController : ControllerBase, IEmpruntsClientController
+    public class EmpruntsClientController : ControllerBase
     {
         private readonly IEmpruntsClientBusiness _empruntsClientBusiness;
         protected readonly ILogger<EmpruntsClientController> _logger;
@@ -20,11 +20,13 @@ namespace VideoTheque.Controllers.Emprunts
             _empruntsClientBusiness = empruntsClientBusiness;
         }
 
+        [HttpGet("{id}")]
         public Task<List<FilmViewModel>> GetFilmsEmpruntablesFromHost([FromRoute] int id)
         {
             return _empruntsClientBusiness.GetFilmsEmpruntablesFromHost(id);
         }
 
+        [HttpGet("{idHost}/{idFilm}")]
         public void GetEmprunt([FromRoute] int idHost, [FromRoute] int idFilm)
         {
             _empruntsClientBusiness.EmpruntFilm(idHost, idFilm);
