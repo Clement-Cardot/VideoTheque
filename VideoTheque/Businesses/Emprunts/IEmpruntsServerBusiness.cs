@@ -1,13 +1,14 @@
-﻿using VideoTheque.ViewModels;
+﻿using VideoTheque.DTOs;
+using VideoTheque.ViewModels;
 
 namespace VideoTheque.Businesses.Emprunts
 {
     public interface IEmpruntsServerBusiness
     {
-        Task<List<FilmViewModel>> GetFilmsEmpruntables();
+        Task<List<EmpruntableDto>> GetFilmsEmpruntables();
 
-        FilmViewModel GetEmprunt(int idFilm);
+        EmpruntDto GetEmprunt(int idFilm);
 
-        void DeleteEmprunt(string title);
+        void DeleteEmprunt(string titre);
     }
 }

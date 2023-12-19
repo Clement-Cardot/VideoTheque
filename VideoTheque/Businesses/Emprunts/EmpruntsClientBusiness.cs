@@ -7,6 +7,7 @@ using VideoTheque.Repositories.Hosts;
 using VideoTheque.ViewModels;
 using VideoTheque.DTOs;
 using Mapster;
+using System.Collections.Generic;
 
 namespace VideoTheque.Businesses.Emprunts
 {
@@ -38,21 +39,78 @@ namespace VideoTheque.Businesses.Emprunts
             _hostDao = hostDao;
         }
 
-        public Task<HttpResponseMessage> GetFilmsEmpruntablesFromHost(int idHost)
+        public Task<List<EmpruntableDto>> GetFilmsEmpruntablesFromHost(int idHost)
         {
             HostDto host = _hostDao.GetHost(idHost).Result;
 
-            return httpClient.GetAsync(host.Url + "/emprunt/server");
+            Task<List<EmpruntableDto>> empruntables = httpClient.GetAsync(host.Url + "/emprunt/server").Adapt<Task<List<EmpruntableDto>>>();
+
+            return empruntables;
         }
 
         public void EmpruntFilm(int idHost, int idFilm)
         {
             HostDto host = _hostDao.GetHost(idHost).Result;
 
-            FilmViewModel film = httpClient.GetAsync(host.Url + "/emprunt/server").Result.Adapt<FilmViewModel>();
+            EmpruntViewModel emprunt = httpClient.GetAsync(host.Url + "/emprunt/server").Result.Adapt<EmpruntViewModel>();
 
-            FilmDto filmDto = convertToDto(film);
-            filmDto.Owner = film.
+            SupportDto support = _supportDao.GetSupportByName(emprunt.Support).Result;
+            AgeRatingDto ageRating = _ageRatingDao.GetAgeRatingByName(emprunt.AgeRating.Name).Result;
+            GenreDto genre = _genreDao.GetGenreByName(emprunt.Genre.Name).Result;
+            PersonneDto director = _personneDao.GetPersonneByFullName(emprunt.Director.FullName).Result;
+            PersonneDto firstActor = _personneDao.GetPersonneByFullName(emprunt.FirstActor.FullName).Result;
+            PersonneDto scenarist = _personneDao.GetPersonneByFullName(emprunt.Scenarist.FullName).Result;
+            
+            if (ageRating == null)
+            {
+                AgeRatingDto newAgeRating = emprunt.AgeRating.Adapt<AgeRatingDto>();
+                _ageRatingDao.InsertAgeRating(newAgeRating);
+                ageRating = _ageRatingDao.GetAgeRatingByName(emprunt.AgeRating.Name).Result;
+            }
+
+            if (genre == null)
+            {
+                GenreDto newGenre = emprunt.Genre.Adapt<GenreDto>();
+                _genreDao.InsertGenre(newGenre);
+                genre = _genreDao.GetGenreByName(emprunt.Genre.Name).Result;
+            }
+
+            if (director == null)
+            {
+                PersonneDto newDirector = emprunt.Director.Adapt<PersonneDto>();
+                _personneDao.InsertPersonne(newDirector);
+                director = _personneDao.GetPersonneByFullName(emprunt.Director.FullName).Result;
+            }
+
+            if (firstActor == null)
+            {
+                PersonneDto newFirstActor = emprunt.FirstActor.Adapt<PersonneDto>();
+                _personneDao.InsertPersonne(newFirstActor);
+                firstActor = _personneDao.GetPersonneByFullName(emprunt.FirstActor.FullName).Result;
+            }
+
+            if (scenarist == null)
+            {
+                PersonneDto newScenarist = emprunt.Scenarist.Adapt<PersonneDto>();
+                _personneDao.InsertPersonne(newScenarist);
+                scenarist = _personneDao.GetPersonneByFullName(emprunt.Scenarist.FullName).Result;
+            }
+
+            FilmDto newFilm = new FilmDto
+            {
+                Title = emprunt.Titre,
+                Duration = emprunt.Duree,
+                Support = support,
+                AgeRating = ageRating,
+                Genre = genre,
+                Director = director,
+                FirstActor = firstActor,
+                Scenarist = scenarist,
+                Owner = host,
+                IsAvailable = true
+            };
+
+            _filmDao.InsertFilm(ConvertToBluray(newFilm));
         }
 
         private FilmDto ConvertToFilm(BluRayDto bluray)

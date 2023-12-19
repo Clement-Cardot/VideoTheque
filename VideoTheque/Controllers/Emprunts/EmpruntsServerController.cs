@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Mapster;
+using Microsoft.AspNetCore.Mvc;
 using VideoTheque.Businesses.Emprunts;
-using VideoTheque.Businesses.Films;
 using VideoTheque.ViewModels;
 
 namespace VideoTheque.Controllers.Emprunts
 {
     [ApiController]
     [Route("emprunts/server")]
-    public class EmpruntsServerController : ControllerBase, IEmpruntsServerController
+    public class EmpruntsServerController : ControllerBase
     {
         private readonly IEmpruntsServerBusiness _empruntsServerBusiness;
 
@@ -20,15 +20,15 @@ namespace VideoTheque.Controllers.Emprunts
         }
 
         [HttpGet]
-        public async Task<List<FilmViewModel>> GetFilmsEmpruntables() => await _empruntsServerBusiness.GetFilmsEmpruntables();
+        public async Task<List<EmpruntableViewModel>> GetFilmsEmpruntables() => (await _empruntsServerBusiness.GetFilmsEmpruntables()).Adapt<List<EmpruntableViewModel>>();
 
-        [HttpGet("{id}")]
-        public FilmViewModel GetEmprunt([FromRoute] int id) => _empruntsServerBusiness.GetEmprunt(id);
+        [HttpPost("{id}")]
+        public EmpruntViewModel GetEmprunt([FromRoute] int id) => _empruntsServerBusiness.GetEmprunt(id).Adapt<EmpruntViewModel>();
 
-        [HttpDelete("{id}")]
-        public async Task<IResult> DeleteEmprunt([FromRoute] string title)
+        [HttpDelete("{titre}")]
+        public async Task<IResult> DeleteEmprunt([FromRoute] string titre)
         {
-            _empruntsServerBusiness.DeleteEmprunt(title);
+            _empruntsServerBusiness.DeleteEmprunt(titre);
             return Results.Ok();
         }
     }

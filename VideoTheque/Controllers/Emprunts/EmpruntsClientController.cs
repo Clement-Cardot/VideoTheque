@@ -20,13 +20,13 @@ namespace VideoTheque.Controllers.Emprunts
             _empruntsClientBusiness = empruntsClientBusiness;
         }
 
-        [HttpGet("{id}")]
-        public Task<List<FilmViewModel>> GetFilmsEmpruntablesFromHost([FromRoute] int id)
+        [HttpGet("{idHost}")]
+        public Task<List<EmpruntableViewModel>> GetFilmsEmpruntablesFromHost([FromRoute] int idHost)
         {
-            return _empruntsClientBusiness.GetFilmsEmpruntablesFromHost(id);
+            return _empruntsClientBusiness.GetFilmsEmpruntablesFromHost(idHost);
         }
 
-        [HttpGet("{idHost}/{idFilm}")]
+        [HttpPost("{idHost}/{idFilm}")]
         public void GetEmprunt([FromRoute] int idHost, [FromRoute] int idFilm)
         {
             _empruntsClientBusiness.EmpruntFilm(idHost, idFilm);

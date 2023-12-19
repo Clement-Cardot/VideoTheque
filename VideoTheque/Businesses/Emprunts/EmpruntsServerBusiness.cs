@@ -33,22 +33,28 @@ namespace VideoTheque.Businesses.Emprunts
             _supportDao = supportsRepository;
         }
 
-        public Task<List<FilmViewModel>> GetFilmsEmpruntables()
+        public Task<List<EmpruntableDto>> GetFilmsEmpruntables()
         {
             return Task.Run(() =>
             {
-                List<FilmViewModel> films = new List<FilmViewModel>();
+                List<EmpruntableDto> empruntables = new List<EmpruntableDto>();
                 List<BluRayDto> blurays = _filmDao.GetFilmsEmpruntables().Result;
                 foreach (BluRayDto bluray in blurays)
                 {
-                    films.Add(this.convertToModelView(this.ConvertToFilm(bluray)));
+                    empruntables.Add(
+                        new EmpruntableDto
+                        {
+                            Id = bluray.Id,
+                            Titre = bluray.Title
+                        }
+                    );
                 }
-                return films;
+                return empruntables;
             }
             );
         }
 
-        public FilmViewModel GetEmprunt(int id)
+        public EmpruntDto GetEmprunt(int id)
         {
             var bluray = _filmDao.GetFilm(id).Result;
 
@@ -67,12 +73,29 @@ namespace VideoTheque.Businesses.Emprunts
                 throw new NotFoundException($"Film '{id}' ne m'appartient pas");
             }
 
-            FilmViewModel result = this.convertToModelView(this.ConvertToFilm(bluray));
+            SupportDto support = _supportDao.GetSupport(0).Result;
+            AgeRatingDto ageRating = _ageRatingDao.GetAgeRating(bluray.IdAgeRating).Result;
+            GenreDto genre = _genreDao.GetGenre(bluray.IdGenre).Result;
+            PersonneDto director = _personneDao.GetPersonne(bluray.IdDirector).Result;
+            PersonneDto firstActor = _personneDao.GetPersonne(bluray.IdFirstActor).Result;
+            PersonneDto scenarist = _personneDao.GetPersonne(bluray.IdScenarist).Result;
+
+            EmpruntDto emprunt = new EmpruntDto
+            {
+                Titre = bluray.Title,
+                Duree = (int) bluray.Duration,
+                Support = support.Name,
+                AgeRating = ageRating,
+                Genre = genre,
+                Director = director,
+                FirstActor = firstActor,
+                Scenarist = scenarist
+            };
 
             bluray.IsAvailable = false;
             _filmDao.UpdateFilm(id, bluray);
 
-            return result;
+            return emprunt;
         }
 
         public void DeleteEmprunt(string title)

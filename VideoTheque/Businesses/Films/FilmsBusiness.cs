@@ -75,6 +75,12 @@ namespace VideoTheque.Businesses.Films
         public void UpdateFilm(int id, FilmViewModel filmMV)
         {
             FilmDto film = this.convertToDto(filmMV);
+            
+            FilmDto actualfilm = this.ConvertToFilm(_filmDao.GetFilm(id).Result);
+            if (actualfilm.IsAvailable == false || actualfilm.Owner != null)
+            {
+                throw new InternalErrorException($"Le film {film.Title} n'est pas modifiable pour le moment");
+            }
 
             if (_filmDao.UpdateFilm(id, this.ConvertToBluray(film)).IsFaulted)
             {
@@ -84,6 +90,12 @@ namespace VideoTheque.Businesses.Films
 
         public void DeleteFilm(int id)
         {
+            FilmDto actualfilm = this.ConvertToFilm(_filmDao.GetFilm(id).Result);
+            if (actualfilm.IsAvailable == false || actualfilm.Owner != null)
+            {
+                throw new InternalErrorException($"Le film {actualfilm.Title} ne peut pas être supprimer pour le moment");
+            }
+
             if (_filmDao.DeleteFilm(id).IsFaulted)
             {
                 throw new InternalErrorException($"Erreur lors de la suppression du film d'identifiant {id}");
