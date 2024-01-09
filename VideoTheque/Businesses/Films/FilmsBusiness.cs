@@ -1,10 +1,13 @@
 ﻿using Mapster;
+using Microsoft.Extensions.Hosting;
 using System.IO;
+using System.Net.Http;
 using VideoTheque.Core;
 using VideoTheque.DTOs;
 using VideoTheque.Repositories.AgeRating;
 using VideoTheque.Repositories.Films;
 using VideoTheque.Repositories.Genres;
+using VideoTheque.Repositories.Hosts;
 using VideoTheque.Repositories.Personnes;
 using VideoTheque.Repositories.Supports;
 using VideoTheque.ViewModels;
@@ -18,6 +21,7 @@ namespace VideoTheque.Businesses.Films
         private readonly IGenresRepository _genreDao;
         private readonly IAgeRatingsRepository _ageRatingDao;
         private readonly ISupportsRepository _supportDao;
+        private readonly IHostsRepository _hostDao;
 
         public FilmsBusiness(
             IFilmsRepository filmDao,
@@ -32,6 +36,7 @@ namespace VideoTheque.Businesses.Films
             _genreDao = genresRepository;
             _ageRatingDao = ageRatingsRepository;
             _supportDao = supportsRepository;
+            _hostDao = hostDao;
         }
 
         public Task<List<FilmViewModel>> GetFilms()
@@ -91,9 +96,16 @@ namespace VideoTheque.Businesses.Films
         public void DeleteFilm(int id)
         {
             FilmDto actualfilm = this.ConvertToFilm(_filmDao.GetFilm(id).Result);
-            if (actualfilm.IsAvailable == false || actualfilm.Owner != null)
+            if (actualfilm.IsAvailable == false)
             {
                 throw new InternalErrorException($"Le film {actualfilm.Title} ne peut pas être supprimer pour le moment");
+            }
+
+            if (actualfilm.Owner != null)
+            {
+                HttpClient httpClient = new();
+
+                httpClient.DeleteAsync(actualfilm.Owner.Url + "/empruntables/" + actualfilm.Title);
             }
 
             if (_filmDao.DeleteFilm(id).IsFaulted)
