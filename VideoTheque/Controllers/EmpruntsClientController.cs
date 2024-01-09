@@ -4,17 +4,17 @@ using VideoTheque.Businesses.Genres;
 using VideoTheque.DTOs;
 using VideoTheque.ViewModels;
 
-namespace VideoTheque.Controllers.Emprunts
+namespace VideoTheque.Controllers
 {
     [ApiController]
-    [Route("emprunts/client")]
-    public class EmpruntsClientController : ControllerBase
+    [Route("emprunts")]
+    public class EmpruntsController : ControllerBase
     {
         private readonly IEmpruntsClientBusiness _empruntsClientBusiness;
-        protected readonly ILogger<EmpruntsClientController> _logger;
-        
+        protected readonly ILogger<EmpruntsController> _logger;
 
-        public EmpruntsClientController(ILogger<EmpruntsClientController> logger, IEmpruntsClientBusiness empruntsClientBusiness)
+
+        public EmpruntsController(ILogger<EmpruntsController> logger, IEmpruntsClientBusiness empruntsClientBusiness)
         {
             _logger = logger;
             _empruntsClientBusiness = empruntsClientBusiness;
