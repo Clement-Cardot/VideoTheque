@@ -38,7 +38,7 @@ namespace VideoTheque.Businesses.Emprunts
             return Task.Run(() =>
             {
                 List<EmpruntableDto> empruntables = new List<EmpruntableDto>();
-                List<BluRayDto> blurays = _filmDao.GetFilmsEmpruntables().Result;
+                List<BluRayDto> blurays = _filmDao.GetFilmsEmpruntables();
                 foreach (BluRayDto bluray in blurays)
                 {
                     empruntables.Add(

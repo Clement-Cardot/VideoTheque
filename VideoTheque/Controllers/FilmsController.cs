@@ -37,7 +37,7 @@
             var created = _filmsBusiness.InsertFilm(filmVM);
             return Results.Created($"/films/{created.Id}", created);
         }
-
+        
         [HttpPut("{id}")]
         public async Task<IResult> UpdateFilm([FromRoute] int id, [FromBody] FilmViewModel filmVM)
         {
@@ -53,13 +53,13 @@
         }
 
         // Empruntables
-        [HttpGet("/empruntables")]
+        [HttpGet("empruntables")]
         public async Task<List<EmpruntableViewModel>> GetFilmsEmpruntables() => (await _empruntsServerBusiness.GetFilmsEmpruntables()).Adapt<List<EmpruntableViewModel>>();
 
-        [HttpPost("/empruntables/{id}")]
+        [HttpPost("empruntables/{id}")]
         public EmpruntViewModel GetEmprunt([FromRoute] int id) => _empruntsServerBusiness.GetEmprunt(id).Adapt<EmpruntViewModel>();
 
-        [HttpDelete("/empruntables/{titre}")]
+        [HttpDelete("empruntables/{titre}")]
         public async Task<IResult> DeleteEmprunt([FromRoute] string titre)
         {
             _empruntsServerBusiness.DeleteEmprunt(titre);

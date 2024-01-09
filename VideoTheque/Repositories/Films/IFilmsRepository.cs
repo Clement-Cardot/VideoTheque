@@ -6,7 +6,7 @@ namespace VideoTheque.Repositories.Films
     {
         Task<List<BluRayDto>> GetFilms();
 
-        Task<List<BluRayDto>> GetFilmsEmpruntables();
+        List<BluRayDto> GetFilmsEmpruntables();
 
         ValueTask<BluRayDto?> GetFilm(int id);
 
