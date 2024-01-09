@@ -12,6 +12,6 @@
         public PersonneDto Director { get; set; }
         public PersonneDto Scenarist { get; set; }
         public bool IsAvailable { get; set; }
-        public PersonneDto? Owner { get; set; }
+        public HostDto? Owner { get; set; }
     }
 }

@@ -39,11 +39,11 @@ namespace VideoTheque.Businesses.Emprunts
             _hostDao = hostDao;
         }
 
-        public Task<List<EmpruntableDto>> GetFilmsEmpruntablesFromHost(int idHost)
+        public Task<List<EmpruntableViewModel>> GetFilmsEmpruntablesFromHost(int idHost)
         {
             HostDto host = _hostDao.GetHost(idHost).Result;
 
-            Task<List<EmpruntableDto>> empruntables = httpClient.GetAsync(host.Url + "/emprunt/server").Adapt<Task<List<EmpruntableDto>>>();
+            Task<List<EmpruntableViewModel>> empruntables = httpClient.GetAsync(host.Url + "/emprunt/server").Adapt<Task<List<EmpruntableViewModel>>>();
 
             return empruntables;
         }
@@ -126,7 +126,7 @@ namespace VideoTheque.Businesses.Emprunts
                 FirstActor = _personneDao.GetPersonne(bluray.IdFirstActor).Result,
                 Scenarist = _personneDao.GetPersonne(bluray.IdScenarist).Result,
                 Support = _supportDao.GetSupport(1).Result,
-                Owner = _hostDao.GetHost(bluray.IdOwner).Result
+                Owner = _hostDao.GetHost(bluray.IdOwner ?? default(int)).Result
             };
         }
 

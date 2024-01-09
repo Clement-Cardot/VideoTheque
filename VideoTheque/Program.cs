@@ -49,7 +49,8 @@ builder.Services.AddScoped(typeof(IFilmsBusiness), typeof(FilmsBusiness));
 builder.Services.AddScoped(typeof(IHostsRepository), typeof(HostsRepository));
 builder.Services.AddScoped(typeof(IHostsBusiness), typeof(HostsBusiness));
 
-builder.Services.AddScoped(typeof(IEmpruntsBusiness), typeof(EmpruntsClientBusiness));
+builder.Services.AddScoped(typeof(IEmpruntsClientBusiness), typeof(EmpruntsClientBusiness));
+builder.Services.AddScoped(typeof(IEmpruntsServerBusiness), typeof(EmpruntsServerBusiness));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
