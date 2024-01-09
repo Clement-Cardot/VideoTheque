@@ -52,7 +52,7 @@ namespace VideoTheque.Businesses.Emprunts
         {
             HostDto host = _hostDao.GetHost(idHost).Result;
 
-            EmpruntViewModel emprunt = httpClient.GetAsync(host.Url + "/films/empruntables").Result.Adapt<EmpruntViewModel>();
+            EmpruntViewModel emprunt = httpClient.PostAsync(host.Url + "/films/empruntables/" + idFilm).Result.Adapt<EmpruntViewModel>();
 
             SupportDto support = _supportDao.GetSupportByName(emprunt.Support).Result;
             AgeRatingDto ageRating = _ageRatingDao.GetAgeRatingByName(emprunt.AgeRating.Name).Result;

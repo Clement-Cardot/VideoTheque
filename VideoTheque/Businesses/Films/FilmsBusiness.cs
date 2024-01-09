@@ -105,7 +105,7 @@ namespace VideoTheque.Businesses.Films
             {
                 HttpClient httpClient = new();
 
-                httpClient.DeleteAsync(actualfilm.Owner.Url + "/empruntables/" + actualfilm.Title);
+                httpClient.DeleteAsync(actualfilm.Owner.Url + "/films/empruntables/" + actualfilm.Title);
             }
 
             if (_filmDao.DeleteFilm(id).IsFaulted)
