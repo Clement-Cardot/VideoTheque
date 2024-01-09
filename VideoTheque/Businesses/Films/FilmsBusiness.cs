@@ -28,7 +28,8 @@ namespace VideoTheque.Businesses.Films
             IPersonnesRepository personnesRepository,
             IGenresRepository genresRepository,
             IAgeRatingsRepository ageRatingsRepository,
-            ISupportsRepository supportsRepository
+            ISupportsRepository supportsRepository,
+            IHostsRepository hostDao
             )
         {
             _filmDao = filmDao;
